@@ -1,25 +1,34 @@
 pipeline {
     agent any
+    environment {
+        SONARQUBE_ENV = 'SonarQube'            
+        SONAR_TOKEN = credentials('sonar-token2') 
+    }
     tools {
-        maven 'Maven 3.8.1'
-        jdk 'JDK 17'
+        maven 'maven 3'
     }
     stages {
         stage('Build') {
             steps {
                 sh 'mvn clean install'
+                sh 'mvn clean package'
             }
         }
         stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv('SonarQube') {
-                    sh 'mvn sonar:sonar'
+                withSonarQubeEnv(SONARQUBE_ENV) {
+                    sh """
+                    mvn sonar:sonar \
+                      -Dsonar.projectKey=fruit-app \
+                      -Dsonar.host.url=http://54.165.253.232:9000 \
+                      -Dsonar.login=$SONAR_TOKEN
+                    """
                 }
             }
         }
-        stage('Package Docker Image') {
+        stage('Deploy to Nexus') {
             steps {
-                sh 'docker build -t furit-shop .'
+                sh 'mvn deploy'
             }
         }
     }
