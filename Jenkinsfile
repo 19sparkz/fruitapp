@@ -20,7 +20,7 @@ pipeline {
                     sh """
                     mvn sonar:sonar \
                       -Dsonar.projectKey=fruit-app \
-                      -Dsonar.host.url=http:http://3.86.244.52:9000 \
+                      -Dsonar.host.url=http://3.86.244.52:9000 \
                       -Dsonar.login=ff2dee9735ddb4b3e9ccc0ed3c6e578a61495fea
                     """
                 }
@@ -32,4 +32,3 @@ pipeline {
             }
         }
     }
-}
