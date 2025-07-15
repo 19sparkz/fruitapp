@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>RGF Fruit Shop</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Google Fonts: Poppins -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #f0fff4 0%, #ffee 50%, #ffeef8 100%); 
+      background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100" opacity="0.1"%3E%3Cpath d="M20,50 C30,20 70,20 80,50 C70,80 30    fill="%23ff9999" stroke="none" d="M20,50 A30,30 0 0,1 50,20 A30,30 0 0,1 80,50 A30,30 0 0,1 50,80 A30,30 0 0,1 20,50 Z" /%3E%3Cpath d="M50,20 A30,30 0 0,0 80,50 A30,30 0 0,0 50,80 A30,30 0 0,0 20,50 A30,30 0 0,0 50,20 Z" fill="%2399ff99" stroke="none" /%3E%3C/svg%3E');
+      background-size: 200px 200px;
+      color: #333;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    h1 {
+      font-weight: 600;
+      background: linear-gradient(45deg, #ffb347, #ff6f61, #85e085); 
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      transition: background 1s ease;
+    }
+    h1:hover {
+      background: linear-gradient(45deg, #ff6f61, #85e085, #ffb347); 
+    }
+    h5 {
+      background: linear-gradient(45deg, #ffb347, #ff6f61, #85e085);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      transition: background 1s ease;
+    }
+    h5:hover {
+      background: linear-gradient(45deg, #ff6f61, #85e085, #ffb347);
+    }
+    .card {
+      border: none;
+      border-radius: 15px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      background-color: #fff;
+      overflow: hidden;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+    .card-img-top {
+      height: 200px;
+      object-fit: cover;
+      background: #f0f0f0;
+    }
+    .card-title {
+      color: #2c3e50;
+      font-weight: 400;
+    }
+    .btn-outline-primary {
+      border-color: #28a745;
+      color: #28a745;
+      border-radius: 25px;
+      transition: all 0.3s ease;
+    }
+    .btn-outline-primary:hover {
+      background-color: #28a745;
+      color: white;
+    }
+   
+
+    .btn-danger, .btn-primary {
+      border-radius: 25px;
+      padding: 8px 20px;
+    }
+    footer {
+      margin-top: auto;
+      padding: 20px 0;
+      background: #fff;
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+      text-align: center;
+      color: #666;
+    }
+    #back-to-top {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      display: none;
+      background-color: #ff6f61;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      font-size: 24px;
+      cursor: pointer;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+    #back-to-top:hover {
+      background-color: #e65b50;
+    }
+    .modal-content {
+      border-radius: 15px;
+      border: none;
+    }
+    .modal-header {
+      background-color: #ff6f61;
+      color: white;
+      border-top-left-radius: 15px;
+      border-top-right-radius: 15px;
+    }
+    .modal-body {
+      background-color: #f9f9f9;
+    }
+    .list-group-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-radius: 10px;
+      margin-bottom: 5px;
+    }
+    .btn-success {
+      background-color: #28a745;
+      border: none;
+      border-radius: 25px;
+    }
+  </style>
+</head>
+<body class="p-4">
+  <script>
+    if (!sessionStorage.getItem("user")) {
+      window.location.href = "login.html";
+    }
+  </script>
+
+  <div class="container">
+    <h1 class="text-center mb-4">🍎 Welcome to A simple Fruit Shop</h1>
+
+    <!-- User Info -->
+    <div class="row mb-4 align-items-center">
+      <div class="col-md-6">
+        <h5>Welcome, <strong id="logged-user">User</strong></h5>
+      </div>
+      <div class="col-md-6 text-end">
+        <button class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#cartModal">View Cart</button>
+        <button class="btn btn-danger" onclick="logout()">Logout</button>
+      </div>
+    </div>
+
+    <!-- Fruit Catalog -->
+    <div class="row" id="fruit-list"></div>
+  </div>
+
+  <!-- Cart Modal -->
+  <div class="modal fade" id="cartModal" tabindex="-1" aria-labelledby="cartModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="cartModalLabel">Your Cart</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div id="cart-items" class="list-group">
+            <!-- Cart items will be dynamically added here -->
+          </div>
+          <p id="cart-empty" class="text-center text-muted mt-3" style="display: none;">Your cart is empty.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-success" id="place-order-btn" onclick="placeOrder()">Place Order</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="mt-5">
+    <p>© 2025 Nigeria's Best Fruit Shop. Freshness Delivered! 🍊</p>
+  </footer>
+
+  <!-- Back to Top Button -->
+  <button id="back-to-top" title="Back to Top">↑</button>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const fruits = [
+      { name: "Apple", image: "https://images.pexels.com/photos/102104/pexels-photo-102104.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" },
+      { name: "Banana", image: "https://images.pexels.com/photos/2872755/pexels-photo-2872755.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" },
+      { name: "Orange", image: "https://cdn.pixabay.com/photo/2017/01/20/15/06/orange-1995056_1280.jpg" }, 
+      { name: "Grapes", image: "https://images.pexels.com/photos/708777/pexels-photo-708777.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" },
+      { name: "Strawberry", image: "https://images.pexels.com/photos/89778/strawberries-fruit-red-sweet-89778.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" },
+      { name: "Pineapple", image: "https://images.pexels.com/photos/2134042/pexels-photo-2134042.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" },
+      { name: "Watermelon", image: "https://images.pexels.com/photos/594583/pexels-photo-594583.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" },
+      { name: "Mango", image: "https://images.pexels.com/photos/2294471/pexels-photo-2294471.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" },
+      { name: "Papaya", image: "https://images.pexels.com/photos/594566/pexels-photo-594566.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" },
+      { name: "Kiwi", image: "https://images.pexels.com/photos/1132047/pexels-photo-1132047.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" },
+      { name: "Pear", image: "https://images.pexels.com/photos/4112/pexels-photo.jpg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" },
+      { name: "Peach", image: "https://images.pexels.com/photos/709191/pexels-photo-709191.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" },
+      { name: "Cherry", image: "https://images.pexels.com/photos/109274/pexels-photo-109274.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" },
+      { name: "Plum", image: "https://images.pexels.com/photos/114209/pexels-photo-114209.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" },
+      { name: "Fig", image: "https://images.pexels.com/photos/2269495/pexels-photo-2269495.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" },
+      { name: "Guava", image: "https://images.pexels.com/photos/594610/pexels-photo-594610.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" },
+      { name: "Raspberry", image: "https://images.pexels.com/photos/59999/pexels-photo-59999.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" },
+      { name: "Blueberry", image: "https://images.pexels.com/photos/70862/pexels-photo-70862.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" },
+      { name: "Lemon", image: "https://images.pexels.com/photos/1414122/pexels-photo-1414122.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" },
+      { name: "Pomegranate", image: "https://images.pexels.com/photos/65256/pomegranate-open-pomegranate-cut-fruit-65256.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" },
+    ];
+
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+    function saveCart() {
+      localStorage.setItem("cart", JSON.stringify(cart));
+      updateCartDisplay();
+    }
+
+    function logout() {
+      sessionStorage.removeItem("user");
+      localStorage.removeItem("cart");
+      window.location.href = "login.html";
+    }
+
+    function updateUserDisplay() {
+      const user = sessionStorage.getItem("user") || "Guest";
+      document.getElementById("logged-user").textContent = user;
+    }
+
+    function addToCart(fruit) {
+      cart.push(fruit);
+      saveCart();
+      alert(`${fruit} added to cart!`);
+    }
+
+    function removeFromCart(index) {
+      cart.splice(index, 1);
+      saveCart();
+    }
+
+    function updateCartDisplay() {
+      const cartItems = document.getElementById("cart-items");
+      const cartEmpty = document.getElementById("cart-empty");
+      const placeOrderBtn = document.getElementById("place-order-btn");
+      
+      cartItems.innerHTML = "";
+      if (cart.length === 0) {
+        cartEmpty.style.display = "block";
+        placeOrderBtn.disabled = true;
+      } else {
+        cartEmpty.style.display = "none";
+        placeOrderBtn.disabled = false;
+        cart.forEach((item, index) => {
+          const itemDiv = document.createElement("div");
+          itemDiv.className = "list-group-item";
+          itemDiv.innerHTML = `
+            <span>${item}</span>
+            <button class="btn btn-sm btn-danger" onclick="removeFromCart(${index})">Remove</button>`;
+          cartItems.appendChild(itemDiv);
+        });
+      }
+    }
+
+    function placeOrder() {
+      if (cart.length === 0) {
+        alert("Your cart is empty!");
+        return;
+      }
+      alert(`Order placed successfully! Items: ${cart.join(", ")}`);
+      cart = [];
+      saveCart();
+      const modal = bootstrap.Modal.getInstance(document.getElementById("cartModal"));
+      modal.hide();
+    }
+
+    fruits.forEach(f => {
+      const col = document.createElement("div");
+      col.className = "col-md-4 col-lg-3 mb-4";
+      col.innerHTML = `
+        <div class="card shadow-sm h-100">
+          <img src="${f.image}" class="card-img-top" loading="lazy" style="height: 200px; object-fit: cover;" alt="${f.name}" 
+               onerror="this.src='https://via.placeholder.com/200?text=${f.name}'" />
+          <div class="card-body text-center">
+            <h5 class="card-title">${f.name}</h5>
+            <button class="btn btn-outline-primary" onclick="addToCart('${f.name}')">Add to Cart</button>
+          </div>
+        </div>`;
+      document.getElementById("fruit-list").appendChild(col);
+    });
+
+    updateUserDisplay();
+    updateCartDisplay();
+
+    
+    const backToTop = document.getElementById("back-to-top");
+    window.addEventListener("scroll", () => {
+      if (window.scrollY > 300) {
+        backToTop.style.display = "block";
+      } else {
+        backToTop.style.display = "none";
+      }
+    });
+    backToTop.addEventListener("click", () => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  </script>
+</body>
+</html>
