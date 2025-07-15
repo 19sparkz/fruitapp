@@ -1,0 +1,37 @@
+version: '3.8'
+services:
+  mysql:
+    image: mysql:8
+    container_name: fruitshop-mysql
+    environment:
+      MYSQL_DATABASE: fruitshop
+      MYSQL_PASSWORD: changeme
+      MYSQL_ROOT_PASSWORD: changeme
+      MYSQL_USER: admin
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+    - fruitshop-net
+
+  app:
+    image: machala/fruit-app:2.0
+    container_name: fruitshop
+    depends_on:
+      - mysql
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/fruitshop?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: changeme
+    networks:
+    - fruitshop-net
+
+volumes:
+  mysql_data:
+
+networks:
+  fruitshop-net:
+    driver: bridge
