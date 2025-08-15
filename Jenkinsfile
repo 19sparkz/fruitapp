@@ -20,7 +20,7 @@ pipeline {
                     sh """
                     mvn sonar:sonar \
                       -Dsonar.projectKey=fruit-app \
-                      -Dsonar.host.url=http://3.84.0.130:8081:9000 \
+                      -Dsonar.host.url=http://98.87.1.62:9000 \
                       -Dsonar.login=$SONAR_TOKEN
                     """
                 }
